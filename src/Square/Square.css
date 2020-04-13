@@ -1,0 +1,25 @@
+.Square {
+    width: 150px;
+    height: 150px;
+    line-height: 150px;
+    display: grid;
+    grid-gap: 1px;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 5px;
+}
+
+.Square div {
+    line-height: 1.5;
+    height: 25px;
+    width: 25px;
+    text-align: center;
+    padding: 10px;
+}
+
+.focused {
+    background-color: lightskyblue;
+}
+
+.notFocused {
+    background-color: lightgray;
+}

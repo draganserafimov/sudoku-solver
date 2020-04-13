@@ -1,0 +1,8 @@
+.Sudoku {
+  width: 450px;
+  height: 450px;
+  display: grid;
+  grid-gap: 1px;
+  grid-template-columns: repeat(3, 1fr);
+  margin: auto;
+}
