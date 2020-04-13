@@ -1,5 +1,13 @@
+.App:focus {
+  outline: 0;
+}
+
+.Solve {
+  margin: auto;
+}
+
 .Sudoku {
-  width: 450px;
+  width: 50%;
   height: 450px;
   display: grid;
   grid-gap: 1px;

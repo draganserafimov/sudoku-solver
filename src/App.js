@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import './App.css';
+import classes from './App.css';
 
 import Square from './Square/Square'
-import classes from './App.css';
 
 class App extends Component {
   state = {
@@ -10,61 +9,61 @@ class App extends Component {
     [
       [     
         [
-          [1, 0, 0],
-          [0, 0, 0],
-          [0, 0, 0]
-        ],       
-        [
-          [0, 0, 0],
-          [0, 0, 0],
-          [0, 2, 0]
-        ],       
-        [
-          [0, 0, 0],
-          [0, 0, 0],
-          [0, 0, 0]
-        ]
-      ],
-      [      
-        [
           [0, 2, 0],
-          [0, 0, 0],
+          [0, 0, 4],
           [0, 0, 0]
-        ],       [
+        ],       
+        [
+          [7, 0, 0],
           [0, 0, 0],
-          [0, 0, 0],
-          [0, 0, 0]
-        ],       [
-          [0, 4, 0],
-          [0, 0, 0],
+          [9, 1, 0]
+        ],       
+        [
+          [3, 0, 0],
+          [0, 0, 2],
           [0, 0, 0]
         ]
       ],
       [      
         [
-          [0, 0, 0],
-          [0, 0, 0],
-          [0, 0, 0]
+          [0, 0, 1],
+          [3, 0, 0],
+          [0, 0, 9]
         ],       [
+          [0, 8, 4],
           [0, 0, 0],
+          [5, 6, 0]
+        ],       [
+          [9, 0, 0],
+          [0, 0, 8],
+          [0, 2, 0]
+        ]
+      ],
+      [      
+        [
           [0, 0, 0],
-          [0, 0, 0]
+          [5, 0, 0],
+          [0, 0, 6]
+        ],       [
+          [0, 7, 6],
+          [0, 0, 0],
+          [0, 0, 9]
         ],       
         [
           [0, 0, 0],
-          [0, 0, 0],
-          [0, 9, 0]
+          [7, 0, 0],
+          [0, 4, 0]
         ]
       ]
     ],
 
     focus: {
-      x: 2,
-      y: 2,
+      x: -1,
+      y: -1,
 
       value: {
-        x: 1,
-        y: 0
+        x: -1,
+        y: -1
       }
     }
   }
@@ -85,17 +84,77 @@ class App extends Component {
   }
 
   setValueHandler = (event) => {
-    const value = parseInt(event.key);
-    if (!Number.isInteger(value)) {
+    const sudoku = [...this.state.sudoku];
+    const focus = {...this.state.focus};
+
+    if (!this.checkValue(event.key, sudoku, focus)) {
       return;
     }
-
-    const sudoku = [...this.state.sudoku];
+    
     const square = sudoku[this.state.focus.x][this.state.focus.y];
 
-    square[this.state.focus.value.x][this.state.focus.value.y] = event.key;
+    square[this.state.focus.value.x][this.state.focus.value.y] = parseInt(event.key, 10);
 
     this.setState({ sudoku: sudoku });
+  }
+
+  checkValue = (key, sudoku, focus) => {
+    const value = parseInt(key, 10);
+    if (!Number.isInteger(value)) {
+      return false;
+    }
+
+    return this.checkValueInSquare(value, sudoku) 
+      && this.checkValueVertically(value, sudoku, focus) 
+      && this.checkValueHorizontally(value, sudoku, focus);
+  }
+
+  checkValueInSquare = (number, sudoku) => {
+    const square = sudoku[this.state.focus.x][this.state.focus.y];
+
+    var valid = !square.some((row) => {
+      return row.some((value) => {
+        return number === value;
+      });
+    });
+
+    return valid;
+  }
+
+  checkValueVertically = (number, sudoku, focus) => {
+    let columnSquare = sudoku.map((row) => { 
+      return row[focus.y]; 
+    });
+
+    return columnSquare.every((square, squareIndex) => {
+      if (squareIndex === focus.x) {
+        return true;
+      }
+
+      let column = square.map((row) => {
+        return row[focus.value.y];
+      });
+      
+      return !column.includes(number);
+    });
+  }
+
+  checkValueHorizontally = (number, sudoku, focus) => {
+    let rowSquare = sudoku[focus.x];
+
+    return rowSquare.every((square, squareIndex) => {
+      if (squareIndex === focus.y) {
+        return true;
+      }
+
+      let column = square[focus.value.x];
+
+      return !column.includes(number);
+    });
+  }
+
+  solve = () => {
+    console.log("yo");
   }
 
   render() {
@@ -123,6 +182,8 @@ class App extends Component {
         <div className={classes.Sudoku}>
           {squares}
         </div>
+        <button className={classes.Solve}
+          onClick={() => this.solve()}>solve</button>
       </div>
     );
   }
