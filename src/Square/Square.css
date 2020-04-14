@@ -6,6 +6,7 @@
     grid-gap: 1px;
     grid-template-columns: repeat(3, 1fr);
     padding: 5px;
+    margin: auto;
 }
 
 .Square div {
@@ -14,6 +15,7 @@
     width: 25px;
     text-align: center;
     padding: 10px;
+    margin: auto;
 }
 
 .focused {

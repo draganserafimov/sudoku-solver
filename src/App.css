@@ -7,7 +7,7 @@
 }
 
 .Sudoku {
-  width: 50%;
+  width: 450px;
   height: 450px;
   display: grid;
   grid-gap: 1px;

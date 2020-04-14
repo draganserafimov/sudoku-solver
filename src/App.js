@@ -86,31 +86,41 @@ class App extends Component {
   setValueHandler = (event) => {
     const sudoku = [...this.state.sudoku];
     const focus = {...this.state.focus};
+    const value = parseInt(event.key, 10);
 
-    if (!this.checkValue(event.key, sudoku, focus)) {
+    if (!this.checkValue(sudoku, focus, value)) {
       return;
     }
     
-    const square = sudoku[this.state.focus.x][this.state.focus.y];
-
-    square[this.state.focus.value.x][this.state.focus.value.y] = parseInt(event.key, 10);
+    this.setValueInSudoku(sudoku, focus, value);
 
     this.setState({ sudoku: sudoku });
   }
 
-  checkValue = (key, sudoku, focus) => {
-    const value = parseInt(key, 10);
+  setValueInSudoku = (sudoku, focus, value) => {
+    const square = sudoku[focus.x][focus.y];
+
+    square[focus.value.x][focus.value.y] = value;
+  }
+
+  getValueInSudoku = (sudoku, focus) => {
+    const square = sudoku[focus.x][focus.y];
+
+    return square[focus.value.x][focus.value.y];
+  }
+
+  checkValue = (sudoku, focus, value) => {
     if (!Number.isInteger(value)) {
       return false;
     }
 
-    return this.checkValueInSquare(value, sudoku) 
+    return this.checkValueInSquare(value, sudoku, focus) 
       && this.checkValueVertically(value, sudoku, focus) 
       && this.checkValueHorizontally(value, sudoku, focus);
   }
 
-  checkValueInSquare = (number, sudoku) => {
-    const square = sudoku[this.state.focus.x][this.state.focus.y];
+  checkValueInSquare = (number, sudoku, focus) => {
+    const square = sudoku[focus.x][focus.y];
 
     var valid = !square.some((row) => {
       return row.some((value) => {
@@ -154,7 +164,66 @@ class App extends Component {
   }
 
   solve = () => {
-    console.log("yo");
+    const sudoku = [...this.state.sudoku];
+    const focus = {
+      x: 0,
+      y: 0,
+
+      value: {
+        x: 0,
+        y: 0
+      }
+    }
+    
+    this.doSolve(sudoku, focus);
+
+    this.setState({ sudoku: sudoku });
+  }
+
+  doSolve = (sudoku, focus) => {
+    if (!focus) {
+      return true;
+    }
+
+    if (this.getValueInSudoku(sudoku, focus) !== 0) {
+      return this.doSolve(sudoku, this.getNextFocus(focus));
+    }
+
+    for (let value = 1; value < 10; value++) {
+      if (this.checkValue(sudoku, focus, value)) {
+        this.setValueInSudoku(sudoku, focus, value);
+        return this.doSolve(sudoku, this.getNextFocus(focus));
+      }
+    }
+
+    return false;
+  }
+
+  getNextFocus = (focus) => {
+    if (focus.value.x < 2) {
+      focus.value.x ++;
+      return focus;
+
+    } else if (focus.value.y < 2) {
+      focus.value.y++;
+      focus.value.x = 0;
+      return focus;
+
+    } else if (focus.x < 2) {
+      focus.x++;
+      focus.value.x = 0;
+      focus.value.y = 0;
+      return focus;
+
+    } else if (focus.y < 2) {
+      focus.y++;
+      focus.x = 0;
+      focus.value.x = 0;
+      focus.value.y = 0;
+      return focus;
+    }
+
+    return null;
   }
 
   render() {
